@@ -7,9 +7,8 @@ const buyButtonSelectors = [
     '#buy-now-button',                // Amazon's main Buy Now button ID
     'input[name="submit.buy-now"]',   // Another possible Amazon Buy Now input
     '#one-click-button',              // One-click purchase button
-    // Add more selectors for buttons like "Add to Cart" if desired,
-    // or buttons on other shopping sites.
-    // Example: 'button.some-checkout-class'
+    '#proceed-to-checkout-button',    // Added selector for Proceed to Checkout button
+    'input[name="proceedToRetailCheckout"]'  // Another possible selector for Proceed to Checkout
 ];
 
 let clickedButton = null; // Store the button that was clicked
@@ -26,7 +25,7 @@ function isBuyButton(element) {
         }
         currentElement = currentElement.parentElement;
     }
-    return null; // Not a buy button
+    return null; // Not a buy or proceed button
 }
 
 // --- Event Listener --- FIXME
@@ -105,12 +104,14 @@ document.addEventListener('click', (event) => {
     const targetButton = isBuyButton(event.target);
 
     if (targetButton) {
-        console.log("Buy button clicked:", targetButton);
+        console.log("Button clicked:", targetButton);
         clickedButton = targetButton;
 
+        // Prevent the default click action immediately
         event.preventDefault();
         event.stopPropagation();
 
+        // Show the impulse purchase popup
         showImpulsePopup(
             () => {
                 console.log("User chose to proceed.");
@@ -125,7 +126,7 @@ document.addEventListener('click', (event) => {
             }
         );
     }
-}, true);
+}, true); // Use capture phase to intercept click early
 
 function proceedWithPurchase() {
     if (clickedButton) {
