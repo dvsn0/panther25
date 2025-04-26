@@ -199,7 +199,8 @@ function showImpulsePopup(onConfirm, onCancel) {
                 padding: 30px;
                 border-radius: 10px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-                max-width: 400px;
+                max-width: 300px; /* Adjusted to be more vertical */
+                width: 100%;
                 text-align: center;
                 font-family: sans-serif;
                 color: #FEFAF3;
@@ -281,7 +282,7 @@ function showMessagePopup(message, onConfirm) {
             justify-content: center;
         ">
             <div style="
-                background:linear-gradient(to bottom, #4A412A, #8E7B55);
+                background: linear-gradient(to bottom, #19364d, #6b88a7); /* Gradient background */
                 padding: 30px;
                 border-radius: 10px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
