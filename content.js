@@ -187,7 +187,7 @@ function showImpulsePopup(onConfirm, onCancel) {
     modal.innerHTML = `
         <div style="
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0; /* Full viewport size */
+            top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.5);
             z-index: 9999;
             display: flex;
@@ -195,19 +195,39 @@ function showImpulsePopup(onConfirm, onCancel) {
             justify-content: center;
         ">
             <div style="
-                background: linear-gradient(to bottom, #4A412A, #8E7B55);
+                background: linear-gradient(to bottom, #19364d, #6b88a7); /* Gradient background */
                 padding: 30px;
                 border-radius: 10px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
                 max-width: 400px;
                 text-align: center;
                 font-family: sans-serif;
-                width: 100%;
+                color: #FEFAF3;
             ">
                 <h2>Impulse Purchase Check</h2>
                 <p>Are you sure this isn't an impulse buy?</p>
-                <button id="impulse-proceed" style="margin-right: 10px; padding: 8px 15px;">Yes</button>
-                <button id="impulse-cancel" style="padding: 8px 15px;">No</button>
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <button id="impulse-proceed" style="
+                        padding: 12px 30px;
+                        border-radius: 50px; /* Pill shape */
+                        background: linear-gradient(to bottom, #6A99B0, #8FAAC3); /* Button gradient */
+                        color: #FEFAF3;
+                        border: none;
+                        cursor: pointer;
+                        font-size: 16px;
+                        transition: background-color 0.3s;
+                    ">Yes</button>
+                    <button id="impulse-cancel" style="
+                        padding: 12px 30px;
+                        border-radius: 50px; /* Pill shape */
+                        background: linear-gradient(to bottom, #6A99B0, #8FAAC3); /* Button gradient */
+                        color: #FEFAF3;
+                        border: none;
+                        cursor: pointer;
+                        font-size: 16px;
+                        transition: background-color 0.3s;
+                    ">No</button>
+                </div>
             </div>
         </div>
     `;
@@ -222,9 +242,27 @@ function showImpulsePopup(onConfirm, onCancel) {
         modal.remove();
         onCancel();
     };
+
+    // Hover effect for buttons
+    document.getElementById('impulse-proceed').addEventListener('mouseover', () => {
+        document.getElementById('impulse-proceed').style.background = "linear-gradient(to bottom, #8FAAC3, #6A99B0)"; // Reverse gradient on hover
+        document.getElementById('impulse-proceed').style.transform = "scale(1.05)"; // Slightly increase size on hover
+    });
+    document.getElementById('impulse-proceed').addEventListener('mouseout', () => {
+        document.getElementById('impulse-proceed').style.background = "linear-gradient(to bottom, #6A99B0, #8FAAC3)"; // Reset gradient
+        document.getElementById('impulse-proceed').style.transform = "scale(1)"; // Reset size
+    });
+
+    document.getElementById('impulse-cancel').addEventListener('mouseover', () => {
+        document.getElementById('impulse-cancel').style.background = "linear-gradient(to bottom, #8FAAC3, #6A99B0)"; // Reverse gradient on hover
+        document.getElementById('impulse-cancel').style.transform = "scale(1.05)"; // Slightly increase size on hover
+    });
+    document.getElementById('impulse-cancel').addEventListener('mouseout', () => {
+        document.getElementById('impulse-cancel').style.background = "linear-gradient(to bottom, #6A99B0, #8FAAC3)"; // Reset gradient
+        document.getElementById('impulse-cancel').style.transform = "scale(1)"; // Reset size
+    });
 }
 
-// New
 function showMessagePopup(message, onConfirm) {
     // Remove existing message popup if present
     const existing = document.getElementById('message-popup');
@@ -243,11 +281,11 @@ function showMessagePopup(message, onConfirm) {
             justify-content: center;
         ">
             <div style="
-                background:linear-gradient(to bottom, #19364d, #6b88a7);
+                background:linear-gradient(to bottom, #4A412A, #8E7B55);
                 padding: 30px;
                 border-radius: 10px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-                max-width: 400px;
+                max-width: 300px; /* Adjusted to be more vertical */
                 width: 100%;
                 text-align: center;
                 font-family: sans-serif;
@@ -255,7 +293,16 @@ function showMessagePopup(message, onConfirm) {
             ">
                 <h2>Please Reconsider!</h2>
                 <p>${message}</p>
-                <button id="message-ok" style="padding: 8px 15px;">OK</button>
+                <button id="message-ok" style="
+                    padding: 12px 30px;
+                    border-radius: 50px; /* Pill shape */
+                    background: linear-gradient(to bottom, #6A99B0, #8FAAC3); /* Button gradient */
+                    color: #FEFAF3;
+                    border: none;
+                    cursor: pointer;
+                    font-size: 16px;
+                    transition: background-color 0.3s;
+                ">OK</button>
             </div>
         </div>
     `;
@@ -265,4 +312,14 @@ function showMessagePopup(message, onConfirm) {
         modal.remove();
         onConfirm();
     };
+
+    // Hover effect for button
+    document.getElementById('message-ok').addEventListener('mouseover', () => {
+        document.getElementById('message-ok').style.background = "linear-gradient(to bottom, #8FAAC3, #6A99B0)"; // Reverse gradient on hover
+        document.getElementById('message-ok').style.transform = "scale(1.05)"; // Slightly increase size on hover
+    });
+    document.getElementById('message-ok').addEventListener('mouseout', () => {
+        document.getElementById('message-ok').style.background = "linear-gradient(to bottom, #6A99B0, #8FAAC3)"; // Reset gradient
+        document.getElementById('message-ok').style.transform = "scale(1)"; // Reset size
+    });
 }
