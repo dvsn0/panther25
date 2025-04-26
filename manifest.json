@@ -1,0 +1,36 @@
+{
+    "manifest_version": 3,
+    "name": "Impulse Purchase Blocker",
+    "version": "1.0",
+    "description": "Uses webcam and Hume AI to analyze emotions before completing purchases.",
+    "permissions": [
+      "storage", 
+      "scripting" 
+    ],
+    "host_permissions": [
+      "*://*.amazon.com/*",
+      "*://*.amazon.co.uk/*",
+      "*://*.amazon.ca/*",
+      // Add the Hume AI API endpoint domain here if needed for background script fetch
+      "https://api.hume.ai/*" // Example - CHECK HUME DOCS
+    ],
+    "options_page": "options.html",
+    "background": {
+      "service_worker": "background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": [
+          "*://*.amazon.com/*", 
+          "*://*.amazon.co.uk/*",
+          "*://*.amazon.ca/*"
+        ],
+        "js": ["content.js"]
+      }
+    ],
+    "icons": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  }
