@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Impulse Blocker Webcam Preview</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #f5f5f5;
+        }
+        video {
+            border: 2px solid #333;
+            border-radius: 8px;
+            max-width: 90%;
+            max-height: 70vh;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Webcam Preview</h1>
+    <video id="webcamVideo" autoplay playsinline></video>
+
+    <script src="webcam.js"></script>
+</body>
+</html>

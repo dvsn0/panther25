@@ -4,8 +4,9 @@
     "version": "1.0",
     "description": "Uses webcam and Hume AI to analyze emotions before completing purchases.",
     "permissions": [
-      "storage", 
-      "scripting" 
+      "storage",
+      "scripting",
+      "camera"
     ],
     "host_permissions": [
       "*://*.amazon.com/*",
