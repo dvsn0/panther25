@@ -89,3 +89,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             break;
     }
 });
+
+// --- Initialization ---
+loadSettings();
+console.log("Impulse Blocker background script (Batch API - Confirmed) loaded.");
