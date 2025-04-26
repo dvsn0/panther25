@@ -11,8 +11,7 @@
       "*://*.amazon.com/*",
       "*://*.amazon.co.uk/*",
       "*://*.amazon.ca/*",
-      // Add the Hume AI API endpoint domain here if needed for background script fetch
-      "https://api.hume.ai/*" // Example - CHECK HUME DOCS
+      "https://api.hume.ai/*" 
     ],
     "options_page": "options.html",
     "background": {
