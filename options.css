@@ -1,0 +1,42 @@
+/* Imported Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap');
+
+:root {
+/* Color Palette */
+--primary-color: #19364d;
+--secondary-color: #ab4d4e;
+--light-blue: #bbd0e6;
+--light-brown: #be957f;
+--off-white: #e5d8c8;
+}
+
+body {
+    font-family: "Cabin", sans-serif;
+    padding: 10px;
+    margin-left: 20%;
+    margin-right: 20%;
+    background-color: var(--primary-color);
+}
+
+h1, label {
+    color: var(--off-white);
+}
+
+label {
+    display: block; 
+    margin-top: 10px;
+}
+
+.text, .number { 
+    width: 300px; 
+    margin-bottom: 10px; 
+}
+
+button { 
+    padding: 8px 15px; 
+}
+
+#status { 
+    margin-top: 15px; 
+    color: green; 
+}

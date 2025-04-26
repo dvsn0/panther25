@@ -29,59 +29,100 @@ function isBuyButton(element) {
     return null; // Not a buy button
 }
 
-// --- Event Listener ---
+// --- Event Listener --- FIXME
+// document.addEventListener('click', (event) => {
+//     const targetButton = isBuyButton(event.target);
+
+//     if (targetButton) {
+//         console.log("Buy button clicked:", targetButton);
+//         clickedButton = targetButton; // Store the button
+
+//         // Prevent the default click action immediately
+//         // event.preventDefault(); // handles blocking amazon purchase FIXME
+//         // event.stopPropagation();
+
+//         console.log("Sending request to background for emotion analysis...");
+//         // Send message to background script to start analysis
+//         chrome.runtime.sendMessage({ action: "analyzeEmotion" }, (response) => {
+//             if (chrome.runtime.lastError) {
+//                 console.error("Error sending message:", chrome.runtime.lastError.message);
+//                  // Decide what to do if communication fails - maybe allow purchase?
+//                 // proceedWithPurchase(); // Or block completely?
+//                 alert("Error communicating with extension background. Purchase blocked.");
+//                 return;
+//             }
+
+//             console.log("Received response from background:", response);
+//             if (response && response.action === "emotionResult") {
+//                 if (response.showPopup) {
+//                     // Ask the user for confirmation
+//                     const confirmation = confirm(
+//                         "High negative emotion detected! Are you sure this is a necessary purchase right now?"
+//                     );
+//                     if (confirmation) {
+//                         console.log("User confirmed purchase.");
+//                         proceedWithPurchase();
+//                     } else {
+//                         console.log("User cancelled purchase.");
+//                         // Optionally add a visual cue that the purchase was blocked
+//                         clickedButton.style.outline = "2px solid red";
+//                         setTimeout(() => { if(clickedButton) clickedButton.style.outline = ""; }, 2000);
+//                         clickedButton = null; // Reset stored button
+//                     }
+//                 } else {
+//                     console.log("Emotion levels acceptable or analysis failed, proceeding with purchase.");
+//                     proceedWithPurchase();
+//                 }
+//             } else {
+//                  console.error("Unexpected response from background:", response);
+//                  // Fallback: maybe allow purchase?
+//                  // proceedWithPurchase();
+//                  alert("Received unexpected response from extension background. Purchase blocked.");
+//             }
+//         });
+//     }
+// }, true); // Use capture phase to intercept click early
+
+// document.addEventListener('click', (event) => { // TODO
+//     const targetButton = isBuyButton(event.target);
+
+//     if (targetButton) {
+//         console.log("Buy button clicked:", targetButton);
+//         clickedButton = targetButton;
+
+//         // TEMPORARY: No preventDefault/stopPropagation for now
+//         const confirmation = confirm("Are you making this purchase impulsively?");
+//         if (!confirmation) {
+//             alert("Purchase blocked. Please reconsider!");
+//             event.preventDefault(); // Optionally block ONLY if user cancels
+//             event.stopPropagation();
+//         }
+//     }
+// }, true);
+
+// FIXME
 document.addEventListener('click', (event) => {
     const targetButton = isBuyButton(event.target);
 
     if (targetButton) {
         console.log("Buy button clicked:", targetButton);
-        clickedButton = targetButton; // Store the button
+        clickedButton = targetButton;
 
-        // Prevent the default click action immediately
         event.preventDefault();
         event.stopPropagation();
 
-        console.log("Sending request to background for emotion analysis...");
-        // Send message to background script to start analysis
-        chrome.runtime.sendMessage({ action: "analyzeEmotion" }, (response) => {
-            if (chrome.runtime.lastError) {
-                console.error("Error sending message:", chrome.runtime.lastError.message);
-                 // Decide what to do if communication fails - maybe allow purchase?
-                // proceedWithPurchase(); // Or block completely?
-                alert("Error communicating with extension background. Purchase blocked.");
-                return;
+        showImpulsePopup(
+            () => {
+                console.log("User chose to proceed.");
+                proceedWithPurchase();
+            },
+            () => {
+                console.log("User cancelled the purchase.");
+                alert("Purchase blocked. Please reconsider!");
             }
-
-            console.log("Received response from background:", response);
-            if (response && response.action === "emotionResult") {
-                if (response.showPopup) {
-                    // Ask the user for confirmation
-                    const confirmation = confirm(
-                        "High negative emotion detected! Are you sure this is a necessary purchase right now?"
-                    );
-                    if (confirmation) {
-                        console.log("User confirmed purchase.");
-                        proceedWithPurchase();
-                    } else {
-                        console.log("User cancelled purchase.");
-                        // Optionally add a visual cue that the purchase was blocked
-                        clickedButton.style.outline = "2px solid red";
-                        setTimeout(() => { if(clickedButton) clickedButton.style.outline = ""; }, 2000);
-                        clickedButton = null; // Reset stored button
-                    }
-                } else {
-                    console.log("Emotion levels acceptable or analysis failed, proceeding with purchase.");
-                    proceedWithPurchase();
-                }
-            } else {
-                 console.error("Unexpected response from background:", response);
-                 // Fallback: maybe allow purchase?
-                 // proceedWithPurchase();
-                 alert("Received unexpected response from extension background. Purchase blocked.");
-            }
-        });
+        );
     }
-}, true); // Use capture phase to intercept click early
+}, true);
 
 function proceedWithPurchase() {
     if (clickedButton) {
@@ -130,3 +171,50 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log("Message received in content script:", message);
     // Handle other messages if needed
 });
+
+// FIXME
+function showImpulsePopup(onConfirm, onCancel) {
+    // Remove existing modal if present
+    const existing = document.getElementById('impulse-popup');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'impulse-popup';
+    modal.innerHTML = `
+        <div style="
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        ">
+            <div style="
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                max-width: 400px;
+                text-align: center;
+                font-family: sans-serif;
+            ">
+                <h2>Impulse Purchase Check</h2>
+                <p>Are you sure this isn't an impulse buy?</p>
+                <button id="impulse-proceed" style="margin-right: 10px; padding: 8px 15px;">Yes, it isn't an impulse buy</button>
+                <button id="impulse-cancel" style="padding: 8px 15px;">No, it is an impulse buy and I want it now</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Add button handlers
+    document.getElementById('impulse-proceed').onclick = () => {
+        modal.remove();
+        onConfirm();
+    };
+    document.getElementById('impulse-cancel').onclick = () => {
+        modal.remove();
+        onCancel();
+    };
+}
