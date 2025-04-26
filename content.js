@@ -58,17 +58,11 @@ window.addEventListener('beforeunload', stopWebcam);
 
 // --- Configuration: Buy Button Selectors ---
 const buyButtonSelectors = [
-<<<<<<< HEAD
-    '#buy-now-button',
-    'input[name="submit.buy-now"]',
-    '#one-click-button'
-=======
     '#buy-now-button',                // Amazon's main Buy Now button ID
     'input[name="submit.buy-now"]',   // Another possible Amazon Buy Now input
     '#one-click-button',              // One-click purchase button
     '#proceed-to-checkout-button',    // Added selector for Proceed to Checkout button
     'input[name="proceedToRetailCheckout"]'  // Another possible selector for Proceed to Checkout
->>>>>>> avabranch
 ];
 
 let clickedButton = null; // Store the last clicked buy button
@@ -84,11 +78,7 @@ function isBuyButton(element) {
         }
         currentElement = currentElement.parentElement;
     }
-<<<<<<< HEAD
     return null;
-=======
-    return null; // Not a buy or proceed button
->>>>>>> avabranch
 }
 
 function showImpulsePopup(onConfirm, onCancel) {
