@@ -118,7 +118,10 @@ document.addEventListener('click', (event) => {
             },
             () => {
                 console.log("User cancelled the purchase.");
-                alert("Purchase blocked. Please reconsider!");
+                // Replace alert with showMessagePopup
+                showMessagePopup("Purchase blocked. Please reconsider!", () => {
+                    console.log("User acknowledged the message.");
+                });
             }
         );
     }
@@ -178,12 +181,13 @@ function showImpulsePopup(onConfirm, onCancel) {
     const existing = document.getElementById('impulse-popup');
     if (existing) existing.remove();
 
+    // Create the modal
     const modal = document.createElement('div');
     modal.id = 'impulse-popup';
     modal.innerHTML = `
         <div style="
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0; left: 0; right: 0; bottom: 0; /* Full viewport size */
             background: rgba(0, 0, 0, 0.5);
             z-index: 9999;
             display: flex;
@@ -191,18 +195,19 @@ function showImpulsePopup(onConfirm, onCancel) {
             justify-content: center;
         ">
             <div style="
-                background: white;
+                background: linear-gradient(to bottom, #4A412A, #8E7B55);
                 padding: 30px;
                 border-radius: 10px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
                 max-width: 400px;
                 text-align: center;
                 font-family: sans-serif;
+                width: 100%;
             ">
                 <h2>Impulse Purchase Check</h2>
                 <p>Are you sure this isn't an impulse buy?</p>
-                <button id="impulse-proceed" style="margin-right: 10px; padding: 8px 15px;">Yes, it isn't an impulse buy</button>
-                <button id="impulse-cancel" style="padding: 8px 15px;">No, it is an impulse buy and I want it now</button>
+                <button id="impulse-proceed" style="margin-right: 10px; padding: 8px 15px;">Yes</button>
+                <button id="impulse-cancel" style="padding: 8px 15px;">No</button>
             </div>
         </div>
     `;
@@ -216,5 +221,47 @@ function showImpulsePopup(onConfirm, onCancel) {
     document.getElementById('impulse-cancel').onclick = () => {
         modal.remove();
         onCancel();
+    };
+}
+
+// New
+function showMessagePopup(message, onConfirm) {
+    // Remove existing message popup if present
+    const existing = document.getElementById('message-popup');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'message-popup';
+    modal.innerHTML = `
+        <div style="
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        ">
+            <div style="
+                background:linear-gradient(to bottom, #4A412A, #8E7B55);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                max-width: 400px;
+                width: 100%;
+                text-align: center;
+                font-family: sans-serif;
+            ">
+                <h2>www.amazon.com says</h2>
+                <p>${message}</p>
+                <button id="message-ok" style="padding: 8px 15px;">OK</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    document.getElementById('message-ok').onclick = () => {
+        modal.remove();
+        onConfirm();
     };
 }
