@@ -119,7 +119,7 @@ document.addEventListener('click', (event) => {
             () => {
                 console.log("User cancelled the purchase.");
                 // Replace alert with showMessagePopup
-                showMessagePopup("Purchase blocked. Please reconsider!", () => {
+                showMessagePopup("We'll give you another moment to rethink your purchase.", () => {
                     console.log("User acknowledged the message.");
                 });
             }
@@ -243,7 +243,7 @@ function showMessagePopup(message, onConfirm) {
             justify-content: center;
         ">
             <div style="
-                background:linear-gradient(to bottom, #4A412A, #8E7B55);
+                background:linear-gradient(to bottom, #19364d, #6b88a7);
                 padding: 30px;
                 border-radius: 10px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -251,8 +251,9 @@ function showMessagePopup(message, onConfirm) {
                 width: 100%;
                 text-align: center;
                 font-family: sans-serif;
+                color: #FEFAF3;
             ">
-                <h2>www.amazon.com says</h2>
+                <h2>Please Reconsider!</h2>
                 <p>${message}</p>
                 <button id="message-ok" style="padding: 8px 15px;">OK</button>
             </div>
