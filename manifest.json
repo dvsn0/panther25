@@ -1,33 +1,39 @@
 {
-    "manifest_version": 3,
-    "name": "Impulse Purchase Blocker",
-    "version": "1.0",
-    "description": "Uses Hume AI to analyze emotions before completing purchases.",
-    "permissions": [
-      "storage",
-      "scripting"
-    ],
-    "host_permissions": [
-      "*://*.amazon.com/*",
-      "*://*.amazon.co.uk/*",
-      "*://*.amazon.ca/*",
-      "https://api.hume.ai/*" 
-    ],
-    "options_page": "options.html",
-    "background": {
-      "service_worker": "background.js"
-    },
-    "content_scripts": [
-      {
-        "matches": [
-          "*://*.amazon.com/*", 
-          "*://*.amazon.co.uk/*",
-          "*://*.amazon.ca/*"
-        ],
-        "js": ["content.js"]
-      }
-    ],
-    "icons": {
+  "manifest_version": 3,
+  "name": "Impulse Purchase Blocker",
+  "version": "1.0",
+  "description": "Uses webcam and Hume AI to analyze emotions before completing purchases and helps curb impulse buys.",
+  "permissions": [
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*.amazon.com/*",
+    "*://*.amazon.co.uk/*",
+    "*://*.amazon.ca/*",
+    "https://api.hume.ai/*"
+  ],
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
       "128": "icons/logo.png"
     }
-  }
+  },
+  "icons": {
+    "128": "icons/logo.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.amazon.com/*",
+        "*://*.amazon.co.uk/*",
+        "*://*.amazon.ca/*"
+      ],
+      "js": ["content.js"]
+    }
+  ]
+}

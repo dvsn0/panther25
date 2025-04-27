@@ -233,46 +233,52 @@ function showImpulsePopup(onConfirm, onCancel) {
     modal.innerHTML = `
         <div style="
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 150px; left: 0; right: 0; bottom: 0;  /* Adjust top to move the modal down */
             background: rgba(0, 0, 0, 0.5);
             z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
         ">
+            <!-- Modal Content -->
             <div style="
-                background: linear-gradient(to bottom, #19364d, #6b88a7); /* Gradient background */
+                background: linear-gradient(to bottom, #0F3F7F, #3A7EBF); /* Main gradient for background */
                 padding: 30px;
                 border-radius: 10px;
                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-                max-width: 300px; /* Adjusted to be more vertical */
+                max-width: 300px;
                 width: 100%;
                 text-align: center;
                 font-family: sans-serif;
-                color: #FEFAF3;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
             ">
-                <h2>Impulse Purchase Check</h2>
-                <p>Are you sure this isn't an impulse buy?</p>
+              
+                <h2 style="color: #FEFAF3;">Impulse Purchase Check</h2>  <!-- Grayish color for the title -->
+                <p style="color: #FEFAF3;">Are you sure this isn't an impulse buy?</p>  <!-- Grayish color for text -->
+                
+                <!-- Buttons below the gif -->
                 <div style="display: flex; flex-direction: column; gap: 20px;">
                     <button id="impulse-proceed" style="
                         padding: 12px 30px;
-                        border-radius: 50px; /* Pill shape */
-                        background: linear-gradient(to bottom, #6A99B0, #8FAAC3); /* Button gradient */
-                        color: #FEFAF3;
+                        border-radius: 50px;
+                        background: linear-gradient(to bottom, #6A99B0, #8FAAC3); /* Darker gradient for buttons */
+                        color: #FEFAF3; /* Grayish text color */
                         border: none;
                         cursor: pointer;
                         font-size: 16px;
-                        transition: background-color 0.3s;
+                        transition: background-color 0.3s, transform 0.2s ease-in-out; /* Smooth transition */
                     ">Yes</button>
                     <button id="impulse-cancel" style="
                         padding: 12px 30px;
-                        border-radius: 50px; /* Pill shape */
-                        background: linear-gradient(to bottom, #6A99B0, #8FAAC3); /* Button gradient */
-                        color: #FEFAF3;
+                        border-radius: 50px;
+                        background: linear-gradient(to bottom, #6A99B0, #8FAAC3); /* Darker gradient for buttons */
+                        color: #FEFAF3; /* Grayish text color */
                         border: none;
                         cursor: pointer;
                         font-size: 16px;
-                        transition: background-color 0.3s;
+                        transition: background-color 0.3s, transform 0.2s ease-in-out; /* Smooth transition */
                     ">No</button>
                 </div>
             </div>
