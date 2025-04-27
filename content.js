@@ -81,41 +81,6 @@ function isBuyButton(element) {
     return null;
 }
 
-function showImpulsePopup(onConfirm, onCancel) {
-    const existing = document.getElementById('impulse-popup');
-    if (existing) existing.remove();
-
-    const modal = document.createElement('div');
-    modal.id = 'impulse-popup';
-    modal.innerHTML = `
-        <div style="
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9999; display: flex; align-items: center; justify-content: center;
-        ">
-            <div style="
-                background: white; padding: 30px; border-radius: 10px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-                max-width: 400px; text-align: center; font-family: sans-serif;
-            ">
-                <h2>Impulse Purchase Check</h2>
-                <p>Are you sure this isn't an impulse buy?</p>
-                <button id="impulse-proceed" style="margin-right: 10px; padding: 8px 15px;">Yes, proceed</button>
-                <button id="impulse-cancel" style="padding: 8px 15px;">No, cancel</button>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-
-    document.getElementById('impulse-proceed').onclick = () => {
-        modal.remove();
-        onConfirm();
-    };
-    document.getElementById('impulse-cancel').onclick = () => {
-        modal.remove();
-        onCancel();
-    };
-}
 
 function proceedWithPurchase() {
     if (clickedButton) {
@@ -221,7 +186,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
     // Handle other messages if needed
     
-// FIXME
+
 function showImpulsePopup(onConfirm, onCancel) {
     // 1) Remove existing popup if any
     const old = document.getElementById('impulse-popup');
