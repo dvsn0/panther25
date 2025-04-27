@@ -6,7 +6,7 @@ const proceedBtn = document.getElementById('proceedBtn');
 const messageArea = document.getElementById('messageArea');
 const impulseMessage = document.getElementById('impulseMessage');
 
-const EXTENSION_ID = "eahhhpgnnciefhijgfnodbaoeidndngl"; // <-- VERY IMPORTANT: Replace with your actual Extension ID
+const EXTENSION_ID = "blgfllkpiggogbhpoiehppcgoahdelhb"; // <-- VERY IMPORTANT: Replace with your actual Extension ID
 
 let mediaStream = null;
 let humeApiKey = null;
@@ -186,7 +186,7 @@ proceedBtn.addEventListener('click', async () => {
         displayError(
           `High ${anger >= angerTh ? 'Negative Emotion' : 'Negative Emotion'} detected. ` +
           `Purchase blocked.` + 
-          ` ${anger >= angerTh ? anger.toFixed(1) + " levels of Anger" : anger.toFixed(1) + ' levels of Distress'} analyzed. `
+          ` ${anger >= angerTh ? 1-anger.toFixed(1) + " levels of Anger" : 1-anger.toFixed(1) + ' levels of Distress'} analyzed. `
 
         //     `${anger.toFixed(1)} levels of Uncertainty detected. ` +
         //   `Purchase blocked.`
