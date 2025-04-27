@@ -24,8 +24,8 @@ function saveOptions() {
     // Default values
     chrome.storage.sync.get({
       humeApiKey: '',
-      distressThreshold: 0.6,
-      angerThreshold: 0.5
+      distressThreshold: 0.3,
+      angerThreshold: 0.3
       // Add other defaults
     }, (items) => {
       document.getElementById('apiKey').value = items.humeApiKey;
