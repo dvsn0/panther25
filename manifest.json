@@ -13,6 +13,15 @@
     "*://*.amazon.ca/*",
     "https://api.hume.ai/*"
   ],
+  "web_accessible_resources": [
+    {
+      "resources": ["inject-buy-now.js"],
+      "matches": ["*://*.amazon.com/*",
+                  "*://*.amazon.co.uk/*",
+                  "*://*.amazon.ca/*"
+    ]
+    }
+  ],
   "options_page": "options.html",
   "background": {
     "service_worker": "background.js"

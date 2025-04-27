@@ -81,6 +81,7 @@ function isBuyButton(element) {
     return null;
 }
 
+/*
 function showImpulsePopup(onConfirm, onCancel) {
     const existing = document.getElementById('impulse-popup');
     if (existing) existing.remove();
@@ -116,112 +117,19 @@ function showImpulsePopup(onConfirm, onCancel) {
         onCancel();
     };
 }
-
-function proceedWithPurchase() {
-    if (clickedButton) {
-        console.log("Proceeding with click action on:", clickedButton);
-        if (clickedButton.form) {
-            let tempInput = null;
-            if (clickedButton.name && clickedButton.value) {
-                tempInput = document.createElement('input');
-                tempInput.type = 'hidden';
-                tempInput.name = clickedButton.name;
-                tempInput.value = clickedButton.value;
-                clickedButton.form.appendChild(tempInput);
-            }
-            clickedButton.form.submit();
-            if (tempInput) clickedButton.form.removeChild(tempInput);
-        } else {
-            const originalButton = clickedButton;
-            clickedButton = null;
-            originalButton.click();
-        }
-    } else {
-        console.error("No button stored to proceed with purchase.");
-    }
+*/
+function clickInPageContext(sel) {
+    const script = document.createElement('script');
+    script.textContent = `
+        (function(){
+        var btn = document.querySelector('${sel}');
+        if(btn) btn.click();
+        })();
+    `;
+    document.documentElement.appendChild(script);
+    script.remove();
 }
 
-async function captureWebcamAndSend() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        const videoTrack = stream.getVideoTracks()[0];
-        const imageCapture = new ImageCapture(videoTrack);
-        const frame = await imageCapture.grabFrame();
-        videoTrack.stop();
-        stream.getTracks().forEach(track => track.stop());
-
-        const canvas = document.createElement('canvas');
-        canvas.width = frame.width;
-        canvas.height = frame.height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(frame, 0, 0);
-        frame.close();
-
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
-        const base64Blob = await blobToBase64(blob);
-
-        chrome.runtime.sendMessage(
-            { action: "analyzeEmotionFromContent", blob: base64Blob },
-            (response) => {
-                console.log("Emotion analysis response from background:", response);
-            }
-        );
-
-    } catch (err) {
-        console.error("Error capturing webcam frame:", err);
-        alert("Unable to access webcam. Please check permissions.");
-    }
-}
-
-async function blobToBase64(blob) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const base64String = reader.result.split(',')[1];
-            resolve(base64String);
-        };
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
-}
-
-// --- Event Listeners ---
-document.addEventListener('click', (event) => {
-    const targetButton = isBuyButton(event.target);
-
-    if (targetButton) {
-        console.log("Button clicked:", targetButton);
-        clickedButton = targetButton;
-
-        // Prevent the default click action immediately
-        event.preventDefault();
-        event.stopPropagation();
-
-        // Show the impulse purchase popup
-        showImpulsePopup(
-            () => {
-                console.log("User chose to proceed.");
-                proceedWithPurchase();
-            },
-            () => {
-                console.log("User cancelled the purchase.");
-                // Replace alert with showMessagePopup
-                showMessagePopup("We'll give you another moment to rethink your purchase.", () => {
-                    console.log("User acknowledged the message.");
-                });
-            }
-        );
-    }
-}, true); // Use capture phase to intercept click early
-
-// Listen for background messages (future expansion)
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log("Message received in content script:", message);
-    // Future handlers here
-});
-    // Handle other messages if needed
-    
-// FIXME
 function showImpulsePopup(onConfirm, onCancel) {
     // Remove existing modal if present
     const existing = document.getElementById('impulse-popup');
@@ -318,6 +226,255 @@ function showImpulsePopup(onConfirm, onCancel) {
         document.getElementById('impulse-cancel').style.transform = "scale(1)"; // Reset size
     });
 }
+
+
+
+// function proceedWithPurchase() {
+    // if (clickedButton) {
+    //     console.log("Proceeding with click action on:", clickedButton);
+    //     clickInPageContext('#buy-now-button');
+    //     if (clickedButton.form) {
+    //         let tempInput = null;
+    //         if (clickedButton.name && clickedButton.value) {
+    //             tempInput = document.createElement('input');
+    //             tempInput.type = 'hidden';
+    //             tempInput.name = clickedButton.name;
+    //             tempInput.value = clickedButton.value;
+    //             clickedButton.form.appendChild(tempInput);
+    //         }
+    //         clickedButton.form.submit();
+    //         if (tempInput) clickedButton.form.removeChild(tempInput);
+    //     } else {
+    //         const originalButton = clickedButton;
+    //         clickedButton = null;
+    //         originalButton.click();
+    //     }
+
+    // } else {
+    //     console.error("No button stored to proceed with purchase.");
+    // }    
+
+//}
+
+//test
+function clickInPageContextExternal() {
+    const s = document.createElement('script');
+    s.src = chrome.runtime.getURL('inject-buy-now.js');
+    document.documentElement.appendChild(s);
+    s.onload = () => s.remove();
+  }
+//try this
+function proceedWithPurchase() {
+    console.log("starting proceedWithPurchase");
+    if (!clickedButton) return console.error("…");
+  
+    // if this was one of the Buy-Now inputs…
+    //if (clickedButton.matches('#buy-now-button, input[name="submit.buy-now"]')) {
+      // build the right selector
+    //   let sel = clickedButton.id
+    //     ? `#${clickedButton.id}`
+    //     : `input[name="${clickedButton.name}"]`;
+  
+    //   clickInPageContext(sel);
+    //   clickedButton = null;
+
+      //new
+      if (clickedButton.matches('#buy-now-button, input[name="submit.buy-now"]')) {
+        clickInPageContextExternal();
+        clickedButton = null;
+        
+      console.log("inside 'if buy now button was clicked'");
+      return;
+    }
+  
+    // otherwise fall back to the checkout flow
+    if (clickedButton.form) {
+      clickedButton.form.submit();
+    } else {
+      clickedButton.click();
+    }
+    clickedButton = null;
+  }
+  
+
+
+async function captureWebcamAndSend() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const videoTrack = stream.getVideoTracks()[0];
+        const imageCapture = new ImageCapture(videoTrack);
+        const frame = await imageCapture.grabFrame();
+        videoTrack.stop();
+        stream.getTracks().forEach(track => track.stop());
+
+        const canvas = document.createElement('canvas');
+        canvas.width = frame.width;
+        canvas.height = frame.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(frame, 0, 0);
+        frame.close();
+
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+        const base64Blob = await blobToBase64(blob);
+
+        chrome.runtime.sendMessage(
+            { action: "analyzeEmotionFromContent", blob: base64Blob },
+            (response) => {
+                console.log("Emotion analysis response from background:", response);
+            }
+        );
+
+    } catch (err) {
+        console.error("Error capturing webcam frame:", err);
+        alert("Unable to access webcam. Please check permissions.");
+    }
+}
+
+async function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64String = reader.result.split(',')[1];
+            resolve(base64String);
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
+// --- Event Listeners ---
+document.addEventListener('click', (event) => {
+    const targetButton = isBuyButton(event.target);
+
+    if (targetButton) {
+        console.log("Button clicked:", targetButton);
+        clickedButton = targetButton;
+
+        // Prevent the default click action immediately
+        event.preventDefault();
+        event.stopPropagation();
+
+        // Show the impulse purchase popup
+        showImpulsePopup(
+            () => {
+                console.log("User chose to proceed.");
+                proceedWithPurchase();
+            },
+            () => {
+                console.log("User cancelled the purchase.");
+                // Replace alert with showMessagePopup
+                showMessagePopup("We'll give you another moment to rethink your purchase.", () => {
+                    console.log("User acknowledged the message.");
+                });
+            }
+        );
+    }
+}, true); // Use capture phase to intercept click early
+
+// Listen for background messages (future expansion)
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log("Message received in content script:", message);
+    // Future handlers here
+});
+    // Handle other messages if needed
+    
+// FIXME
+// function showImpulsePopup(onConfirm, onCancel) {
+//     // Remove existing modal if present
+//     const existing = document.getElementById('impulse-popup');
+//     if (existing) existing.remove();
+
+//     // Create the modal
+//     const modal = document.createElement('div');
+//     modal.id = 'impulse-popup';
+//     modal.innerHTML = `
+//         <div style="
+//             position: fixed;
+//             top: 150px; left: 0; right: 0; bottom: 0;  /* Adjust top to move the modal down */
+//             background: rgba(0, 0, 0, 0.5);
+//             z-index: 9999;
+//             display: flex;
+//             align-items: center;
+//             justify-content: center;
+//         ">
+//             <!-- Modal Content -->
+//             <div style="
+//                 background: linear-gradient(to bottom, #0F3F7F, #3A7EBF); /* Main gradient for background */
+//                 padding: 30px;
+//                 border-radius: 10px;
+//                 box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+//                 max-width: 300px;
+//                 width: 100%;
+//                 text-align: center;
+//                 font-family: sans-serif;
+//                 display: flex;
+//                 flex-direction: column;
+//                 gap: 20px;
+//             ">
+              
+//                 <h2 style="color: #FEFAF3;">Impulse Purchase Check</h2>  <!-- Grayish color for the title -->
+//                 <p style="color: #FEFAF3;">Are you sure this isn't an impulse buy?</p>  <!-- Grayish color for text -->
+                
+//                 <!-- Buttons below the gif -->
+//                 <div style="display: flex; flex-direction: column; gap: 20px;">
+//                     <button id="impulse-proceed" style="
+//                         padding: 12px 30px;
+//                         border-radius: 50px;
+//                         background: linear-gradient(to bottom, #6A99B0, #8FAAC3); /* Darker gradient for buttons */
+//                         color: #FEFAF3; /* Grayish text color */
+//                         border: none;
+//                         cursor: pointer;
+//                         font-size: 16px;
+//                         transition: background-color 0.3s, transform 0.2s ease-in-out; /* Smooth transition */
+//                     ">Yes</button>
+//                     <button id="impulse-cancel" style="
+//                         padding: 12px 30px;
+//                         border-radius: 50px;
+//                         background: linear-gradient(to bottom, #6A99B0, #8FAAC3); /* Darker gradient for buttons */
+//                         color: #FEFAF3; /* Grayish text color */
+//                         border: none;
+//                         cursor: pointer;
+//                         font-size: 16px;
+//                         transition: background-color 0.3s, transform 0.2s ease-in-out; /* Smooth transition */
+//                     ">No</button>
+//                 </div>
+//             </div>
+//         </div>
+//     `;
+//     document.body.appendChild(modal);
+
+//     // Add button handlers
+//     document.getElementById('impulse-proceed').onclick = () => {
+//         modal.remove();
+//         onConfirm();
+//     };
+//     document.getElementById('impulse-cancel').onclick = () => {
+//         modal.remove();
+//         chrome.storage.sync.get({ blockedCount: 0 }, ({ blockedCount }) => {
+//             chrome.storage.sync.set({ blockedCount: blockedCount + 1 });
+//           });
+//         onCancel();
+//     };
+
+//     // Hover effect for buttons
+//     document.getElementById('impulse-proceed').addEventListener('mouseover', () => {
+//         document.getElementById('impulse-proceed').style.background = "linear-gradient(to bottom, #8FAAC3, #6A99B0)"; // Reverse gradient on hover
+//         document.getElementById('impulse-proceed').style.transform = "scale(1.05)"; // Slightly increase size on hover
+//     });
+//     document.getElementById('impulse-proceed').addEventListener('mouseout', () => {
+//         document.getElementById('impulse-proceed').style.background = "linear-gradient(to bottom, #6A99B0, #8FAAC3)"; // Reset gradient
+//         document.getElementById('impulse-proceed').style.transform = "scale(1)"; // Reset size
+//     });
+
+//     document.getElementById('impulse-cancel').addEventListener('mouseover', () => {
+//         document.getElementById('impulse-cancel').style.background = "linear-gradient(to bottom, #8FAAC3, #6A99B0)"; // Reverse gradient on hover
+//         document.getElementById('impulse-cancel').style.transform = "scale(1.05)"; // Slightly increase size on hover
+//     });
+//     document.getElementById('impulse-cancel').addEventListener('mouseout', () => {
+//         document.getElementById('impulse-cancel').style.background = "linear-gradient(to bottom, #6A99B0, #8FAAC3)"; // Reset gradient
+//         document.getElementById('impulse-cancel').style.transform = "scale(1)"; // Reset size
+//     });
+// }
 
 function showMessagePopup(message, onConfirm) {
     // Remove existing message popup if present
