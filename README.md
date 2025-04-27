@@ -1,4 +1,4 @@
-##To run:
+## To run:
     - Go to the chrome extension page
     - Turn on developer mode
     - Press "Load Unpacked" and select the "extension" folder inside the panther25 folder
