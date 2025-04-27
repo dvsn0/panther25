@@ -5,32 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emotion Check</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding-top: 50px; line-height: 1.6; }
-        /* Keep video/canvas hidden for Batch API approach */
-        #video { display: none; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding-top: 50px; }
+        #video { display: none; } /* Can show for debugging */
         #canvas { display: none; }
-        #controls { margin-top: 30px; width: 100%; text-align: center; }
-        #messageArea { margin-top: 20px; font-weight: bold; color: #333; min-height: 3em; text-align: center; width: 80%; max-width: 400px;}
-        #messageArea.error { color: #d9534f; }
-        button { padding: 15px 30px; font-size: 1.2em; cursor: pointer; border-radius: 5px; border: none; background-color: #007bff; color: white; transition: background-color 0.2s;}
-        button:disabled { background-color: #ccc; cursor: not-allowed; opacity: 0.7; }
-        button:not(:disabled):hover { background-color: #0056b3; }
+        #messageArea { margin-top: 20px; font-weight: bold; color: #d9534f; min-height: 3em; }
+        button { padding: 15px 30px; font-size: 1.2em; cursor: pointer; }
     </style>
-    <!-- No Chart.js needed -->
 </head>
 <body>
     <h1>Checking Your Emotional State...</h1>
     <p>Please grant camera permission if prompted.</p>
 
-    <!-- Hidden elements for capture -->
     <video id="video" autoplay muted playsinline></video>
     <canvas id="canvas"></canvas>
 
     <div id="controls">
-        <button id="proceedBtn" disabled>Initializing...</button>
+        <button id="proceedBtn" disabled>Checking Camera...</button>
     </div>
 
-    <div id="messageArea">Initializing...</div>
+    <div id="messageArea"></div>
 
     <script src="script.js"></script>
 </body>

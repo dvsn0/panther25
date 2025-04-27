@@ -1,44 +1,44 @@
 {
-    "manifest_version": 3,
-    "name": "Impulse Purchase Blocker (Redirect)",
-    "version": "4.0",
-    "description": "Redirects to an emotion check page before completing purchases.",
-    "permissions": [
-      "storage", 
-      "tabs"  
-    ],
-    "host_permissions": [
-      "*://*.amazon.com/*",
-      "*://*.amazon.co.uk/*",
-      "*://*.amazon.ca/*"
-    ],
-    "options_page": "options.html",
-    "background": {
-      "service_worker": "background.js"
-    },
-    "content_scripts": [
-      {
-        "matches": [
-          "*://*.amazon.com/gp/buy/spc/handlers/display.html*",
-          "*://*.amazon.com/checkout/*",
-          "*://*.amazon.com/proceed-to-checkout*",
-          "*://*.amazon.co.uk/gp/buy/spc/handlers/display.html*",
-          "*://*.amazon.co.uk/checkout/*",
-          "*://*.amazon.co.uk/proceed-to-checkout*",
-          "*://*.amazon.ca/gp/buy/spc/handlers/display.html*",
-          "*://*.amazon.ca/checkout/*",
-          "*://*.amazon.ca/proceed-to-checkout*"
-        ],
-        "js": ["content.js"],
-        "run_at": "document_start" 
-      }
-    ],
-    "externally_connectable": {
-      "matches": ["http://localhost:8081/*"] 
-    },
-    "icons": {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
+  "manifest_version": 3,
+  "name": "Impulse Purchase Blocker (Redirect)",
+  "version": "4.0",
+  "description": "Redirects to an emotion check page before completing purchases.",
+  "permissions": [
+    "storage", 
+    "tabs"     
+  ],
+  "host_permissions": [
+    "*://*.amazon.com/*",
+    "*://*.amazon.co.uk/*",
+    "*://*.amazon.ca/*"
+  ],
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.amazon.com/gp/buy/spc/handlers/display.html*",
+        "*://*.amazon.com/checkout/*",
+        "*://*.amazon.com/proceed-to-checkout*",
+        "*://*.amazon.co.uk/gp/buy/spc/handlers/display.html*",
+        "*://*.amazon.co.uk/checkout/*",
+        "*://*.amazon.co.uk/proceed-to-checkout*",
+        "*://*.amazon.ca/gp/buy/spc/handlers/display.html*",
+        "*://*.amazon.ca/checkout/*",
+        "*://*.amazon.ca/proceed-to-checkout*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start" 
     }
+  ],
+  "externally_connectable": {
+    "matches": ["http://localhost:8081/*"] 
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
+}
