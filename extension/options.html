@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Impulse Blocker Settings</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+    <h1>Impulse Blocker Settings</h1>
+
+    <div class="settings">
+        <label for="apiKey"> <img src="icons/key.svg"> Hume AI API Key:</label>
+        <input class="text" type="text" id="apiKey" name="apiKey" placeholder="Enter API Key Here">
+    
+        <label for="distressThreshold"> <img src="icons/distressed.svg"> Distress Threshold (0-1):</label>
+        <input class="number" type="number" id="distressThreshold" name="distressThreshold" min="0" max="1" step="0.05" value="0.6">
+
+        <label for="angerThreshold"> <img src="icons/angry.svg"> Anger Threshold (0-1):</label>
+        <input class="number" type="number" id="angerThreshold" name="angerThreshold" min="0" max="1" step="0.05" value="0.5">
+        <!-- Add more emotion thresholds if needed -->
+    </div>
+        
+    <button id="save">Save Settings</button>
+    <div id="status"></div>
+
+    <script src="options.js"></script>
+
+    <footer>
+        <p>Impulse Blocker</p>
+        <p>Preventing impulse purchases since 2025</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,126 @@
+/* Imported Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap');
+
+:root {
+/* Color Palette */
+--primary-color: #19364d;
+--secondary-color: #ab4d4e;
+--light-blue: #bbd0e6;
+--light-brown: #6b88a7;
+--off-white: #FEFAF3;
+}
+
+html, body {
+    height: 100%;
+    margin: 10px;
+  }
+
+body {    
+  font-family: "Cabin", sans-serif;
+  background: linear-gradient(to bottom, #19364d, #6b88a7) no-repeat fixed;    
+  background-size: cover;
+  padding: 10px;
+}
+  
+
+h1 {
+    color: var(--off-white);
+    text-align: center;
+    padding-bottom: 10px;
+    font-size: 50px;
+}
+
+label { /* text for the boxes*/
+    color: var(--off-white);
+    display: block; 
+    margin-top: 25px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 400px; 
+    text-align: left;
+    font-size: 35px;
+}
+
+img {
+  width: 25px;
+  height: 25px;
+}
+
+.text, .number { 
+    width: 400px; 
+    margin-bottom: 250px; 
+    display: block;
+    margin: 10px auto;
+    padding: 5px;
+    border-radius: 0.3rem;
+    border: 1px solid var(--off-white);  
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 1px 4px #0B1B21;
+    font-family: inherit;
+    font-size: 25px;
+}
+
+.settings {
+    max-width: 500px;       
+    margin: 0 auto;         
+    text-align: center;  
+  }
+
+button { 
+    padding: 8px 15px; 
+    display: block;
+    margin: 10px auto;
+
+    background-color: var(--primary-color);  
+    color: var(--off-white);     
+    box-shadow: 0 1px 4px #0B1B21;
+    border: none;
+    border-radius: 0.35rem;                   
+    padding: 0.75rem 1.5rem;                  
+    font-size: 1rem;
+    cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    box-shadow        0.2s ease,
+    transform         0.1s ease;
+}
+
+/* Hover state */
+button:hover {
+  background-color: var(--light-blue);  
+  box-shadow: 0 6px 12px #0B1B21;
+  transform: translateY(-2px);
+  color: #0B1B21;
+}
+
+/* Active (pressed) state */
+.rounded-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 6px #0B1B21;
+}
+
+footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+}
+
+p {
+  margin:0;
+  padding: 0 auto;
+  font-size: small;
+  color: #0b1b2180;
+}
+
+
+#status { 
+    width: 400px;
+    margin-top: 15px; 
+    margin-bottom: 0;
+    margin-left: auto;
+    margin-right: auto;
+    color: rgb(181, 236, 181);
+}

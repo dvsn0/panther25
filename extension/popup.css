@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap');
+
+body {
+    margin: 0;
+    padding: 12px;
+    width: 280px;
+    font-family: "Cabin", sans-serif;
+    box-sizing: border-box;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  
+  .logo {
+    width: 50px; height: 50px;
+    padding-bottom: 0;
+  }
+  
+  .title {
+    margin: 0;
+    margin-left: 5px;
+    padding-bottom: 0;
+    flex: 1;
+    text-align: left;
+    font-size: 30px;
+    font-weight: bold;
+  }
+  
+  .settings {
+    width: 24px; height: 24px;
+    cursor: pointer;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  .reset-button {
+    margin-top: 20px;
+    padding: 2px 0;
+    width: 20%;
+    border: none;
+    border-radius: 50px;
+    background: #ccc;
+    color: #333;
+    font-family: "Cabin", sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .reset-button:hover {
+    font-family: "Cabin", sans-serif;
+    background: #bbb;
+  }
+  
+  .content {
+    text-align: center;
+    margin-top: 5px;
+  }
+  
+  .subtitle {
+    margin: 0;
+    font-size: 14px;
+  }
+  
+  .count {
+    margin-top: 8px;
+    font-size: 32px;
+    font-weight: bold;
+    color: #3A7EBF;
+  }
+  

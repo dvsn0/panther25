@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emotion Check</title>
+
+  <!-- 1) Import Cabin from Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    /* reset & box-sizing */
+    * { margin: 0; padding: 20px; box-sizing: border-box; }
+
+    /* full‐page gradient and center the content */
+    body {
+      min-height: 100vh;
+      font-family: 'Cabin', sans-serif;
+      background: linear-gradient(to bottom, #19364d, #6b88a7);
+      color: #FEFAF3;
+      text-align: center;
+      padding: 50px 20px;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+      margin-bottom: 0.5rem;
+    }
+    p.lead {
+      margin-bottom: 2rem;
+      font-size: 30px;
+      opacity: 0.9;
+    }
+
+    .camera-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;    /* center children horizontally */
+    }
+
+    .lead {
+        font-size: 4rem;   /* tweak this value up or down */
+        opacity: 0.9;         /* optional: match your design */
+        margin-bottom: 2rem;  /* keep some breathing room */
+    }
+    
+    /* video styling */
+    #video {
+      width: 80%;
+      max-width: 600px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      margin-bottom: 2rem;
+    }
+
+    /* controls sit just under the video */
+    #controls {
+      margin-bottom: 1rem;
+    }
+
+    /* the button pill */
+    #proceedBtn {
+      padding: 24px 48px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(to bottom, #6A99B0, #8FAAC3);
+      color: #FEFAF3;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+    #proceedBtn:not(:disabled):hover {
+      background: linear-gradient(to bottom, #8FAAC3, #6A99B0);
+      transform: scale(1.05);
+    }
+    #proceedBtn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: linear-gradient(to bottom, #6A99B0, #8FAAC3);
+    }
+
+    /* message beneath the button */
+    #messageArea {
+      font-size: 1.5rem;
+      margin-top: 0.5rem;
+      min-height: 1.5rem;
+      color: #f8605b; /* error color */
+    }
+
+    #impulseMessage{
+        font-weight: bold;
+        font-size: 1.3rem;
+        margin-top: 0.5rem;
+        min-height: 1.5rem;
+        color: #FEFAF3;
+    }
+
+    #canvas {
+        display: none;               /* hides it initially */
+        width: 80%;
+        max-width: 600px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        margin: 2rem auto;
+        }
+  </style>
+</head>
+<body>
+  <h1>Checking Your Emotional State...</h1>
+  <p class="lead">Please grant camera permission if prompted.</p>
+
+  <div class="camera-container">
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <div id="controls">
+    <!-- note: starts disabled until camera & config ready -->
+    <button id="proceedBtn" disabled>Checking Camera...</button>
+  </div>
+
+  <div id="impulseMessage"></div>
+
+  <div id="messageArea"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
