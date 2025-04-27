@@ -101,7 +101,10 @@ button:hover {
 }
 
 footer {
-  margin-top: 100px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 10px;
   text-align: center;
 }
 
@@ -114,9 +117,10 @@ p {
 
 
 #status { 
-    display: block;
-    margin-top: 15px; 
-    margin-bottom: 0;
-    margin-right: auto;
-    color: rgb(181, 236, 181); 
+  width: 400px;
+  margin-top: 15px; 
+  margin-bottom: 0;
+  margin-left: auto;
+  margin-right: auto;
+  color: rgb(181, 236, 181); 
 }
