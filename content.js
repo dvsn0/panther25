@@ -223,159 +223,160 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     
 // FIXME
 function showImpulsePopup(onConfirm, onCancel) {
-    // Remove existing modal if present
-    const existing = document.getElementById('impulse-popup');
-    if (existing) existing.remove();
-
-    // Create the modal
-    const modal = document.createElement('div');
-    modal.id = 'impulse-popup';
-    modal.innerHTML = `
-        <div style="
-            position: fixed;
-            top: 150px; left: 0; right: 0; bottom: 0;  /* Adjust top to move the modal down */
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        ">
-            <!-- Modal Content -->
-            <div style="
-                background: linear-gradient(to bottom, #0F3F7F, #3A7EBF); /* Main gradient for background */
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-                max-width: 300px;
-                width: 100%;
-                text-align: center;
-                font-family: sans-serif;
-                display: flex;
-                flex-direction: column;
-                gap: 20px;
-            ">
-              
-                <h2 style="color: #FEFAF3;">Impulse Purchase Check</h2>  <!-- Grayish color for the title -->
-                <p style="color: #FEFAF3;">Are you sure this isn't an impulse buy?</p>  <!-- Grayish color for text -->
-                
-                <!-- Buttons below the gif -->
-                <div style="display: flex; flex-direction: column; gap: 20px;">
-                    <button id="impulse-proceed" style="
-                        padding: 12px 30px;
-                        border-radius: 50px;
-                        background: linear-gradient(to bottom, #6A99B0, #8FAAC3); /* Darker gradient for buttons */
-                        color: #FEFAF3; /* Grayish text color */
-                        border: none;
-                        cursor: pointer;
-                        font-size: 16px;
-                        transition: background-color 0.3s, transform 0.2s ease-in-out; /* Smooth transition */
-                    ">Yes</button>
-                    <button id="impulse-cancel" style="
-                        padding: 12px 30px;
-                        border-radius: 50px;
-                        background: linear-gradient(to bottom, #6A99B0, #8FAAC3); /* Darker gradient for buttons */
-                        color: #FEFAF3; /* Grayish text color */
-                        border: none;
-                        cursor: pointer;
-                        font-size: 16px;
-                        transition: background-color 0.3s, transform 0.2s ease-in-out; /* Smooth transition */
-                    ">No</button>
-                </div>
-            </div>
-        </div>
+    // 1) Remove existing popup if any
+    const old = document.getElementById('impulse-popup');
+    if (old) old.remove();
+  
+    // 2) Create the dialog container
+    const dialog = document.createElement('div');
+    dialog.id = 'impulse-popup';
+    Object.assign(dialog.style, {
+      position:       'fixed',
+      top:            '50%',
+      left:           '50%',
+      transform:      'translate(-50%, -50%)',
+      background:     'linear-gradient(to bottom, #19364d, #6b88a7)',
+      borderRadius:   '10px',
+      padding:        '30px',
+      boxShadow:      '0 4px 12px rgba(0,0,0,0.2)',
+      maxWidth:       '300px',
+      width:          '90%',
+      textAlign:      'center',
+      fontFamily:    'Cabin, sans-serif',
+      color:          '#FEFAF3',
+      display:        'flex',
+      flexDirection:  'column',
+      gap:            '20px',
+      zIndex:         '9999',
+    });
+  
+    // 3) Inject HTML for your text + buttons
+    dialog.innerHTML = `
+      <h2>Impulse Purchase Check</h2>
+      <p>Are you sure this isn't an impulse buy?</p>
+      <div style="display:flex; flex-direction: column; gap: 10px;">
+        <button id="impulse-proceed" style="
+          padding: 12px 0;
+          border-radius: 50px;
+          background: linear-gradient(to bottom, #6A99B0, #8FAAC3);
+          border: none;
+          cursor: pointer;
+          font-size: 16px;
+          color: #FEFAF3;
+          transition: background 0.3s, transform 0.2s ease-in-out;
+          fontFamily:    'Cabin, sans-serif',
+        ">Yes</button>
+        <button id="impulse-cancel" style="
+          padding: 12px 0;
+          border-radius: 50px;
+          background: linear-gradient(to bottom, #6A99B0, #8FAAC3);
+          border: none;
+          cursor: pointer;
+          font-size: 16px;
+          color: #FEFAF3;
+          transition: background 0.3s, transform 0.2s ease-in-out;
+          fontFamily:    'Cabin, sans-serif',
+        ">No</button>
+      </div>
     `;
-    document.body.appendChild(modal);
-
-    // Add button handlers
-    document.getElementById('impulse-proceed').onclick = () => {
-        modal.remove();
-        onConfirm();
+  
+    document.body.appendChild(dialog);
+  
+    // 4) Grab references
+    const btnYes = document.getElementById('impulse-proceed');
+    const btnNo  = document.getElementById('impulse-cancel');
+  
+    // 5) Yes handler
+    btnYes.onclick = () => {
+      dialog.remove();
+      onConfirm();
     };
-    document.getElementById('impulse-cancel').onclick = () => {
-        modal.remove();
-        chrome.storage.sync.get({ blockedCount: 0 }, ({ blockedCount }) => {
-            chrome.storage.sync.set({ blockedCount: blockedCount + 1 });
-          });
-        onCancel();
+  
+    // 6) No handler (with counter bump)
+    btnNo.onclick = () => {
+      dialog.remove();
+      chrome.storage.sync.get({ blockedCount: 0 }, ({ blockedCount }) => {
+        chrome.storage.sync.set({ blockedCount: blockedCount + 1 });
+      });
+      onCancel();
     };
+  
+    // 7) Hover effects (swap gradient & scale)
+    const addHover = (btn) => {
+      btn.addEventListener('mouseover', () => {
+        btn.style.background  = 'linear-gradient(to bottom, #8FAAC3, #6A99B0)';
+        btn.style.transform   = 'scale(1.05)';
+      });
+      btn.addEventListener('mouseout', () => {
+        btn.style.background  = 'linear-gradient(to bottom, #6A99B0, #8FAAC3)';
+        btn.style.transform   = 'scale(1)';
+      });
+    };
+    addHover(btnYes);
+    addHover(btnNo);
+  }
 
-    // Hover effect for buttons
-    document.getElementById('impulse-proceed').addEventListener('mouseover', () => {
-        document.getElementById('impulse-proceed').style.background = "linear-gradient(to bottom, #8FAAC3, #6A99B0)"; // Reverse gradient on hover
-        document.getElementById('impulse-proceed').style.transform = "scale(1.05)"; // Slightly increase size on hover
+  function showMessagePopup(message, onConfirm) {
+    // 1) Remove any existing message popup
+    const old = document.getElementById('message-popup');
+    if (old) old.remove();
+  
+    // 2) Create the dialog container
+    const dialog = document.createElement('div');
+    dialog.id = 'message-popup';
+    Object.assign(dialog.style, {
+      position:       'fixed',
+      top:            '50%',
+      left:           '50%',
+      transform:      'translate(-50%, -50%)',
+      background:     'linear-gradient(to bottom, #19364d, #6b88a7)',
+      borderRadius:   '10px',
+      padding:        '30px',
+      boxShadow:      '0 4px 12px rgba(0,0,0,0.2)',
+      maxWidth:       '300px',
+      width:          '90%',
+      textAlign:      'center',
+      fontFamily:    'Cabin, sans-serif',
+      color:          '#FEFAF3',
+      display:        'flex',
+      flexDirection:  'column',
+      gap:            '20px',
+      zIndex:         '9999',
     });
-    document.getElementById('impulse-proceed').addEventListener('mouseout', () => {
-        document.getElementById('impulse-proceed').style.background = "linear-gradient(to bottom, #6A99B0, #8FAAC3)"; // Reset gradient
-        document.getElementById('impulse-proceed').style.transform = "scale(1)"; // Reset size
-    });
-
-    document.getElementById('impulse-cancel').addEventListener('mouseover', () => {
-        document.getElementById('impulse-cancel').style.background = "linear-gradient(to bottom, #8FAAC3, #6A99B0)"; // Reverse gradient on hover
-        document.getElementById('impulse-cancel').style.transform = "scale(1.05)"; // Slightly increase size on hover
-    });
-    document.getElementById('impulse-cancel').addEventListener('mouseout', () => {
-        document.getElementById('impulse-cancel').style.background = "linear-gradient(to bottom, #6A99B0, #8FAAC3)"; // Reset gradient
-        document.getElementById('impulse-cancel').style.transform = "scale(1)"; // Reset size
-    });
-}
-
-function showMessagePopup(message, onConfirm) {
-    // Remove existing message popup if present
-    const existing = document.getElementById('message-popup');
-    if (existing) existing.remove();
-
-    const modal = document.createElement('div');
-    modal.id = 'message-popup';
-    modal.innerHTML = `
-        <div style="
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        ">
-            <div style="
-                background: linear-gradient(to bottom, #19364d, #6b88a7); /* Gradient background */
-                padding: 30px;
-                border-radius: 10px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-                max-width: 300px; /* Adjusted to be more vertical */
-                width: 100%;
-                text-align: center;
-                font-family: sans-serif;
-                color: #FEFAF3;
-            ">
-                <h2>Please Reconsider!</h2>
-                <p>${message}</p>
-                <button id="message-ok" style="
-                    padding: 12px 30px;
-                    border-radius: 50px; /* Pill shape */
-                    background: linear-gradient(to bottom, #6A99B0, #8FAAC3); /* Button gradient */
-                    color: #FEFAF3;
-                    border: none;
-                    cursor: pointer;
-                    font-size: 16px;
-                    transition: background-color 0.3s;
-                ">OK</button>
-            </div>
-        </div>
+  
+    // 3) Inject HTML
+    dialog.innerHTML = `
+      <h2>Please Reconsider!</h2>
+      <p>${message}</p>
+      <button id="message-ok" style="
+        padding: 12px 0;
+        border-radius: 50px;
+        background: linear-gradient(to bottom, #6A99B0, #8FAAC3);
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        color: #FEFAF3;
+        transition: background 0.3s, transform 0.2s ease-in-out;
+        fontFamily:    'Cabin, sans-serif',
+      ">OK</button>
     `;
-    document.body.appendChild(modal);
-
-    document.getElementById('message-ok').onclick = () => {
-        modal.remove();
-        onConfirm();
+  
+    document.body.appendChild(dialog);
+  
+    // 4) Wire up the OK button
+    const btnOK = document.getElementById('message-ok');
+    btnOK.onclick = () => {
+      dialog.remove();
+      onConfirm();
     };
-
-    // Hover effect for button
-    document.getElementById('message-ok').addEventListener('mouseover', () => {
-        document.getElementById('message-ok').style.background = "linear-gradient(to bottom, #8FAAC3, #6A99B0)"; // Reverse gradient on hover
-        document.getElementById('message-ok').style.transform = "scale(1.05)"; // Slightly increase size on hover
+  
+    // 5) Hover effect
+    btnOK.addEventListener('mouseover', () => {
+      btnOK.style.background = 'linear-gradient(to bottom, #8FAAC3, #6A99B0)';
+      btnOK.style.transform  = 'scale(1.05)';
     });
-    document.getElementById('message-ok').addEventListener('mouseout', () => {
-        document.getElementById('message-ok').style.background = "linear-gradient(to bottom, #6A99B0, #8FAAC3)"; // Reset gradient
-        document.getElementById('message-ok').style.transform = "scale(1)"; // Reset size
+    btnOK.addEventListener('mouseout', () => {
+      btnOK.style.background = 'linear-gradient(to bottom, #6A99B0, #8FAAC3)';
+      btnOK.style.transform  = 'scale(1)';
     });
-}
+  }

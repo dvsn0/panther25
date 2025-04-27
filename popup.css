@@ -30,6 +30,25 @@ body {
     width: 24px; height: 24px;
     cursor: pointer;
   }
+
+  .reset-button {
+    margin-top: 20px;
+    padding: 2px 0;
+    width: 20%;
+    border: none;
+    border-radius: 50px;
+    background: #ccc;
+    color: #333;
+    font-family: "Cabin", sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .reset-button:hover {
+    font-family: "Cabin", sans-serif;
+    background: #bbb;
+  }
   
   .content {
     text-align: center;
