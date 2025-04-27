@@ -1,29 +1,10 @@
-#test
-
-
-MAKE SURE TO:
-    TURN ON HISTORY
-    TURN ON GOOGLE SEARCH
-
-go to extension directory
-run:
-python3 -m http.server 8081
-
-Resource for HUME AI for gemini llm:
-
-https://dev.hume.ai/docs/expression-measurement/rest
-https://dev.hume.ai/reference/expression-measurement-api/batch/list-jobs
-https://dev.hume.ai/reference/expression-measurement-api/batch/start-inference-job
-https://dev.hume.ai/reference/expression-measurement-api/batch/get-job-details
-https://dev.hume.ai/reference/expression-measurement-api/batch/get-job-predictions
-https://dev.hume.ai/reference/expression-measurement-api/batch/get-job-artifacts
-https://dev.hume.ai/reference/expression-measurement-api/batch/start-inference-job-from-local-file
-https://dev.hume.ai/reference/expression-measurement-api/stream/stream/stream
-
-https://dev.hume.ai/docs/expression-measurement/websocket
-https://dev.hume.ai/docs/expression-measurement/websocket#handling-reconnects
-https://dev.hume.ai/docs/expression-measurement/websocket#handling-connection-failures
-https://dev.hume.ai/docs/expression-measurement/websocket#implementing-error-handling
-https://dev.hume.ai/docs/expression-measurement/websocket#keeping-websockets-open
-
-https://dev.hume.ai/docs/resources/errors#transcript-confidence-below-threshold-value
+##To run:
+    - Go to the chrome extension page
+    - Turn on developer mode
+    - Press "Load Unpacked" and select the "extension" folder inside the panther25 folder
+    - Edit script.js with the correct extension id that is displayed on your end.
+    - Navigate to the emotion_check_page directory
+    - Run the command:
+        - python3 -m http.server 8081 
+        (python or python3 depending on what system you are on)
+    - Click on the extension, press options, and input your own Hume API key
