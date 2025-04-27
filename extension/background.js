@@ -1,7 +1,8 @@
-// background.js - Redirect Version
+// background.js - Redirect Version (with Loop Prevention)
 
 let settings = {}; // Stores API key, thresholds
-let redirectedTabs = {}; // Tracks tabs we've already redirected to prevent loops { tabId: originalUrl }
+// Use a more descriptive name: stores { tabId: originalCheckoutUrl } for tabs currently undergoing the check
+let checkPendingForTab = {};
 
 const LOCALHOST_URL_BASE = "http://localhost:8081"; // Change port if needed
 
@@ -9,11 +10,11 @@ const LOCALHOST_URL_BASE = "http://localhost:8081"; // Change port if needed
 function loadSettings() {
     chrome.storage.sync.get({
         humeApiKey: '',
-        distressThreshold: 0.6, // Store thresholds too
+        distressThreshold: 0.6,
         angerThreshold: 0.6
     }, (items) => {
         settings = items;
-        console.log("Background: Settings loaded:", settings);
+        console.log("Background: Settings loaded."); // Simplified log
     });
 }
 chrome.storage.onChanged.addListener((changes, namespace) => {
@@ -25,50 +26,64 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
 loadSettings();
 // --- End Settings Management ---
 
-// --- Message Handling ---
+// --- Message Handling from Content Script ---
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log("Background: Received message:", message, "from sender:", sender);
 
-    // Handle redirect request from content script
     if (message.action === "startRedirect" && sender.tab) {
         const tabId = sender.tab.id;
-        // Avoid redirect loops if we already sent this tab to localhost
-        if (redirectedTabs[tabId]) {
-            console.log(`Background: Tab ${tabId} already redirected. Ignoring duplicate request.`);
-            return false; // Message handled (ignored)
-        }
-        if (!message.checkoutUrl) {
+        const checkoutUrl = message.checkoutUrl;
+
+        if (!checkoutUrl) {
             console.error("Background: Received startRedirect without checkoutUrl.");
-            return false;
+            return false; // Indicate message not handled
         }
 
-        // Construct the target URL for the local page
-        const originalUrlEncoded = encodeURIComponent(message.checkoutUrl);
-        const targetUrl = `${LOCALHOST_URL_BASE}/?originalUrl=${originalUrlEncoded}`;
+        // *** LOOP PREVENTION LOGIC ***
+        // Check if we are currently waiting for this tab to return from localhost for this *exact* URL
+        if (checkPendingForTab[tabId] && checkPendingForTab[tabId] === checkoutUrl) {
+            // Yes, this tab just returned from the check. Allow it to load.
+            console.log(`Background: Tab ${tabId} returned from emotion check for ${checkoutUrl}. Allowing load.`);
+            // Clear the pending state
+            delete checkPendingForTab[tabId];
+            // Do NOT redirect again.
+            return false; // Indicate message handled (by ignoring it)
+        } else {
+            // No, this is a fresh attempt to load the checkout URL (or a different one).
+            // Initiate the redirect flow.
 
-        console.log(`Background: Redirecting tab ${tabId} from ${message.checkoutUrl} to ${targetUrl}`);
-        // Store that we are redirecting this tab
-        redirectedTabs[tabId] = message.checkoutUrl;
-        // Perform the redirect
-        chrome.tabs.update(tabId, { url: targetUrl }, (updatedTab) => {
-            if (chrome.runtime.lastError) {
-                console.error("Background: Error redirecting tab:", chrome.runtime.lastError.message);
-                // Clean up if redirect fails
-                delete redirectedTabs[tabId];
-            } else {
-                console.log(`Background: Tab ${tabId} successfully redirected.`);
-            }
-        });
-        return false; // Message handled
+            // Construct the target URL for the local page
+            const originalUrlEncoded = encodeURIComponent(checkoutUrl);
+            const targetUrl = `${LOCALHOST_URL_BASE}/?originalUrl=${originalUrlEncoded}`;
+
+            console.log(`Background: Redirecting tab ${tabId} from ${checkoutUrl} to ${targetUrl}`);
+
+            // Store that we are now waiting for this tab to complete the check for this URL
+            checkPendingForTab[tabId] = checkoutUrl;
+
+            // Perform the redirect
+            chrome.tabs.update(tabId, { url: targetUrl }, (updatedTab) => {
+                if (chrome.runtime.lastError) {
+                    console.error(`Background: Error redirecting tab ${tabId}:`, chrome.runtime.lastError.message);
+                    // Clean up if redirect fails immediately
+                    delete checkPendingForTab[tabId];
+                } else {
+                    console.log(`Background: Tab ${tabId} successfully redirected to emotion check.`);
+                }
+            });
+            return false; // Indicate message handled (by redirecting)
+        }
     }
 
-    return false; // Indicate message not handled if it falls through
+    // Handle other messages if needed...
+
+    return false; // Indicate message not handled by this listener
 });
 
-// Listen for messages from the externally connectable localhost page
+// --- Message Handling from Localhost Page ---
 chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
      console.log("Background: Received external message:", message, "from sender:", sender);
-     if (sender.origin !== "http://localhost:8081") { // Basic security check
+     if (!sender.origin || !sender.origin.startsWith('http://localhost')) { // Allow any localhost port for flexibility
           console.warn("Background: Ignoring external message from unexpected origin:", sender.origin);
           return false; // Don't respond
      }
@@ -79,8 +94,7 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
                sendResponse({
                     success: true,
                     apiKey: settings.humeApiKey,
-                    // Send thresholds too, so localhost doesn't need them hardcoded
-                    thresholds: {
+                    thresholds: { // Send nested thresholds object
                         Anger: settings.angerThreshold,
                         Distress: settings.distressThreshold
                     }
@@ -89,30 +103,37 @@ chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => 
                console.error("Background: Cannot provide API key, it's not set in options.");
                sendResponse({ success: false, error: "API Key not configured in extension options." });
           }
-          // Keep channel open for async response? Although get() is sync here, best practice:
-          return true; // Indicate response will be sent asynchronously (even if quick)
+          // Keep channel open for async response
+          return true;
      }
      return false; // Unhandled external message action
 });
 
 
 // --- Tab Cleanup ---
-// Listen for tab closures or updates to remove them from our redirected list
+// Listen for tab closures or updates to remove them from our pending list
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-    if (redirectedTabs[tabId]) {
-        console.log(`Background: Redirected tab ${tabId} removed. Clearing state.`);
-        delete redirectedTabs[tabId];
+    if (checkPendingForTab[tabId]) {
+        console.log(`Background: Tab ${tabId} (pending check) removed. Clearing state.`);
+        delete checkPendingForTab[tabId];
     }
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    // If a tab we redirected updates its URL to something *other* than our localhost page,
-    // assume the user navigated away or back, and clear the state.
-    if (redirectedTabs[tabId] && changeInfo.url && !changeInfo.url.startsWith(LOCALHOST_URL_BASE)) {
-        console.log(`Background: Redirected tab ${tabId} navigated away from localhost. Clearing state.`);
-        delete redirectedTabs[tabId];
+    // If a tab we sent to localhost updates its URL to something *other* than
+    // our localhost page OR the original checkout URL it came from,
+    // assume the user navigated away manually and clear the pending state.
+    const pendingUrl = checkPendingForTab[tabId];
+    if (pendingUrl && changeInfo.url) {
+        // Check if the new URL is NOT localhost AND also NOT the original URL we are waiting for it to return to.
+        if (!changeInfo.url.startsWith(LOCALHOST_URL_BASE) && changeInfo.url !== pendingUrl) {
+             console.log(`Background: Tab ${tabId} (pending check) navigated away to ${changeInfo.url}. Clearing state.`);
+             delete checkPendingForTab[tabId];
+        }
+        // Note: We specifically DO NOT clear the state if changeInfo.url *is* the pendingUrl,
+        // because that's the legitimate return navigation we are trying to allow!
     }
 });
 // --- End Tab Cleanup ---
 
-console.log("Impulse Blocker background script (Redirect Version) loaded.");
+console.log("Impulse Blocker background script (Redirect Version w/ Loop Prevention) loaded.");
