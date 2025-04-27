@@ -293,6 +293,9 @@ function showImpulsePopup(onConfirm, onCancel) {
     };
     document.getElementById('impulse-cancel').onclick = () => {
         modal.remove();
+        chrome.storage.sync.get({ blockedCount: 0 }, ({ blockedCount }) => {
+            chrome.storage.sync.set({ blockedCount: blockedCount + 1 });
+          });
         onCancel();
     };
 
