@@ -134,6 +134,26 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         // because that's the legitimate return navigation we are trying to allow!
     }
 });
+
+chrome.runtime.onMessageExternal.addListener((message, sender, sendResponse) => {
+    // … your existing getHumeApiKey handler …
+  
+    if (message.action === "incrementCount") {
+      // read the old value, bump it, save it back
+      chrome.storage.sync.get({ blockedCount: 0 }, (data) => {
+        const next = data.blockedCount + 1;
+        chrome.storage.sync.set({ blockedCount: next }, () => {
+          console.log("BlockedCount incremented to", next);
+          sendResponse({ success: true, newCount: next });
+        });
+      });
+      return true;  // keep channel open for our async sendResponse
+    }
+  
+    // any other external messages…
+  });
+  
+
 // --- End Tab Cleanup ---
 
 console.log("Impulse Blocker background script (Redirect Version w/ Loop Prevention) loaded.");

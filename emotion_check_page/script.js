@@ -126,68 +126,98 @@ async function captureFrameAsBlob() {
 // --- Button Click Logic ---
 
 proceedBtn.addEventListener('click', async () => {
-    if (isProcessing) return; // Prevent double clicks
+    // 1) Prevent double‐clicks
+    if (isProcessing) return;
     isProcessing = true;
-    proceedBtn.disabled = true;
+  
+    // 2) Update UI
+    proceedBtn.disabled    = true;
     proceedBtn.textContent = "Analyzing...";
     messageArea.textContent = "Capturing frame and analyzing emotion...";
-
+  
     try {
-        // 1. Capture Frame
-        const imageBlob = await captureFrameAsBlob();
-        if (!imageBlob) throw new Error("Failed to capture frame as Blob.");
-        console.log("Frame captured as Blob, size:", imageBlob.size);
-
-        // We can stop the camera now as we only need one frame
-        stopCamera();
-
-        // 2. Analyze with Hume
-        const emotions = await analyzeWithHume(imageBlob);
-        console.log("Analysis complete. Emotions:", emotions);
-
-        // 3. Check Thresholds
-        const angerScore = emotions['Anger'] || 0;
-        const distressScore = emotions['Distress'] || 0;
-        const angerThreshold = thresholds?.Anger || 0.6;
-        const distressThreshold = thresholds?.Distress || 0.6;
-
-        console.log(`Scores - Anger: ${angerScore.toFixed(3)} (Threshold: ${angerThreshold}), Distress: ${distressScore.toFixed(3)} (Threshold: ${distressThreshold})`);
-
-        if (angerScore >= angerThreshold || distressScore >= distressThreshold) {
-            displayError(`High ${angerScore >= angerThreshold ? 'Anger' : 'Distress'} detected. Please reconsider this purchase.`);
-            // Don't redirect, keep the user on this page with the message
-            proceedBtn.textContent = "Action Blocked";
-            // Optionally re-enable button after a delay?
-             // setTimeout(() => {
-             //     proceedBtn.disabled = false;
-             //     proceedBtn.textContent = "Proceed";
-             //     isProcessing = false;
-             //     messageArea.textContent = "Please try again if you feel calmer.";
-             //     startCamera(); // Restart camera if allowing retry
-             // }, 5000);
-
-        } else {
-            // 4. Redirect Back
-            messageArea.textContent = "Emotion levels acceptable. Redirecting back to Amazon...";
-            console.log("Redirecting to:", originalUrl);
-            // Add a small delay so the user sees the message
-            setTimeout(() => {
-                window.location.href = originalUrl;
-            }, 1500);
-            // isProcessing remains true to prevent actions during redirect delay
-        }
-
+      // 3) Draw the current video frame into the on‐page canvas
+      canvas.width  = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+      // 4) Swap UI: show the still image, hide live video
+      canvas.style.display = 'block';
+      video.style.display  = 'none';
+  
+      // 5) Capture a Blob from that canvas
+      const imageBlob = await new Promise(resolve =>
+        canvas.toBlob(resolve, 'image/jpeg', 0.9)
+      );
+      console.log("Frame captured as Blob, size:", imageBlob.size);
+  
+      // 6) (Optional) stop the camera stream
+      stopCamera();
+  
+      // 7) Send to Hume and await results
+      const emotions = await analyzeWithHume(imageBlob);
+      console.log("Analysis complete. Emotions:", emotions);
+  
+      // 8) Compare against thresholds
+      const anger    = emotions['Anger']    || 0;
+      const distress = emotions['Distress'] || 0;
+      const angerTh    = thresholds.Anger;
+      const distressTh = thresholds.Distress;
+  
+      console.log(
+        `Scores → Anger: ${anger.toFixed(2)} (≥ ${angerTh}), ` +
+        `Distress: ${distress.toFixed(2)} (≥ ${distressTh})`
+      );
+  
+      if (anger >= angerTh || distress >= distressTh) {
+        // 9a) Blocked: show error, leave user here
+        displayError(
+          `High ${anger >= angerTh ? 'Anger' : 'Distress'} detected. ` +
+          `Purchase blocked.`
+        );
+        // chrome.storage.sync.get({ blockedCount: 0}, ({blockedCount }) => {
+        //     chrome.storage.sync.set({blockedCount: blockedCount + 1 });
+        // });
+        proceedBtn.textContent = "Blocked";
+  
+      } else {
+        // 9b) Allowed: redirect back after a brief pause
+        messageArea.textContent = "Emotion acceptable. Redirecting back to Amazon...";
+            // … inside your “allowed” branch …
+        //  ➔ ask the extension to bump the counter
+        chrome.runtime.sendMessage(
+            EXTENSION_ID,
+            { action: "incrementCount" },
+            (resp) => {
+            if (chrome.runtime.lastError) {
+                console.warn("Could not increment block-count:", chrome.runtime.lastError.message);
+            }
+            }
+        );
+        setTimeout(() => {
+          window.location.href = originalUrl;
+        }, 1500);
+        // leave isProcessing = true to prevent any further clicks
+      }
+  
     } catch (err) {
-        displayError(`Error during processing: ${err.message}`);
-        console.error("Processing error:", err);
-        proceedBtn.disabled = false;
-        proceedBtn.textContent = "Retry Proceed";
-        isProcessing = false;
-        // Attempt to restart camera if it failed
-        if (!mediaStream) startCamera().catch(camErr => displayError(`Camera Error: ${camErr.message}`));
-
+      // 10) Error path: show retry UI
+      displayError(`Error during processing: ${err.message}`);
+      console.error("Processing error:", err);
+  
+      proceedBtn.disabled    = false;
+      proceedBtn.textContent = "Retry Proceed";
+      isProcessing           = false;
+  
+      // if camera died, try to restart
+      if (!mediaStream) {
+        startCamera().catch(camErr =>
+          displayError(`Camera Error: ${camErr.message}`)
+        );
+      }
     }
-});
+  });
 
 
 // --- Hume AI Interaction (Batch API) ---
