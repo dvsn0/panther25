@@ -10,13 +10,7 @@ function handleWebcamPermissionRequest(sendResponse) {
             stream.getTracks().forEach(track => track.stop());
             sendResponse({ success: true });
 
-            // --- After permission granted, open webcam.html popup ---
-            chrome.windows.create({
-                url: chrome.runtime.getURL("webcam.html"),
-                type: "popup",
-                width: 600,
-                height: 500
-            });
+            // Webcam permission granted.
         })
         .catch((error) => {
             console.error("Webcam permission denied or error:", error);

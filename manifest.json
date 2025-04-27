@@ -2,11 +2,10 @@
     "manifest_version": 3,
     "name": "Impulse Purchase Blocker",
     "version": "1.0",
-    "description": "Uses webcam and Hume AI to analyze emotions before completing purchases.",
+    "description": "Uses Hume AI to analyze emotions before completing purchases.",
     "permissions": [
       "storage",
-      "scripting",
-      "camera"
+      "scripting"
     ],
     "host_permissions": [
       "*://*.amazon.com/*",
