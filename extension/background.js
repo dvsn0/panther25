@@ -10,8 +10,8 @@ const LOCALHOST_URL_BASE = "http://localhost:8081"; // Change port if needed
 function loadSettings() {
     chrome.storage.sync.get({
         humeApiKey: '',
-        distressThreshold: 0.6,
-        angerThreshold: 0.6
+        distressThreshold: 0.5,
+        angerThreshold: 0.5
     }, (items) => {
         settings = items;
         console.log("Background: Settings loaded."); // Simplified log

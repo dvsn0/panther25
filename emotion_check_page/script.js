@@ -4,12 +4,13 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const proceedBtn = document.getElementById('proceedBtn');
 const messageArea = document.getElementById('messageArea');
+const impulseMessage = document.getElementById('impulseMessage');
 
 const EXTENSION_ID = "eahhhpgnnciefhijgfnodbaoeidndngl"; // <-- VERY IMPORTANT: Replace with your actual Extension ID
 
 let mediaStream = null;
 let humeApiKey = null;
-let thresholds = { Anger: 0.6, Distress: 0.6 }; // Defaults, will be fetched
+let thresholds = { Anger: 0.5, Distress: 0.5 }; // Defaults, will be fetched
 let originalUrl = null;
 let isProcessing = false; // Prevent double clicks
 
@@ -171,20 +172,6 @@ proceedBtn.addEventListener('click', async () => {
       );
   
       if (anger >= angerTh || distress >= distressTh) {
-        // 9a) Blocked: show error, leave user here
-        displayError(
-          `High ${anger >= angerTh ? 'Anger' : 'Distress'} detected. ` +
-          `Purchase blocked.`
-        );
-        // chrome.storage.sync.get({ blockedCount: 0}, ({blockedCount }) => {
-        //     chrome.storage.sync.set({blockedCount: blockedCount + 1 });
-        // });
-        proceedBtn.textContent = "Blocked";
-  
-      } else {
-        // 9b) Allowed: redirect back after a brief pause
-        messageArea.textContent = "Emotion acceptable. Redirecting back to Amazon...";
-            // … inside your “allowed” branch …
         //  ➔ ask the extension to bump the counter
         chrome.runtime.sendMessage(
             EXTENSION_ID,
@@ -195,6 +182,24 @@ proceedBtn.addEventListener('click', async () => {
             }
             }
         );
+        // 9a) Blocked: show error, leave user here
+        displayError(
+          `High ${anger >= angerTh ? 'Negative Emotion' : 'Negative Emotion'} detected. ` +
+          `Purchase blocked.` + 
+          ` ${anger >= angerTh ? anger.toFixed(1) + " levels of Anger" : anger.toFixed(1) + ' levels of Distress'} analyzed. `
+
+        //     `${anger.toFixed(1)} levels of Uncertainty detected. ` +
+        //   `Purchase blocked.`
+        );
+        // chrome.storage.sync.get({ blockedCount: 0}, ({blockedCount }) => {
+        //     chrome.storage.sync.set({blockedCount: blockedCount + 1 });
+        // });
+        proceedBtn.textContent = "🚨 Impulse alert! 🚨";
+        impulseMessage.textContent = "Before you hit buy... ask yourself: Will I still want this in 20 minutes? 20 days? No harm in waiting — it'll still be here tomorrow!";
+        document.body.appendChild(impulseMessage);
+      } else {
+        // 9b) Allowed: redirect back after a brief pause
+        messageArea.textContent = "Emotion acceptable. Redirecting back to Amazon...";
         setTimeout(() => {
           window.location.href = originalUrl;
         }, 1500);
@@ -319,7 +324,7 @@ async function getHumeJobResults(jobId) {
 // --- Utility Functions ---
 function displayError(message) {
     console.error(message);
-    messageArea.textContent = `ERROR: ${message}`;
+    messageArea.textContent = `${message}`;
     messageArea.style.color = '#a94442'; // Error color
     proceedBtn.disabled = true;
     proceedBtn.textContent = "Error Occurred";

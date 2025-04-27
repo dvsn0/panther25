@@ -87,8 +87,16 @@
     #messageArea {
       font-size: 1.5rem;
       margin-top: 0.5rem;
-      min-height: 1.5em;
+      min-height: 1.5rem;
       color: #f8605b; /* error color */
+    }
+
+    #impulseMessage{
+        font-weight: bold;
+        font-size: 1.3rem;
+        margin-top: 0.5rem;
+        min-height: 1.5rem;
+        color: #FEFAF3;
     }
 
     #canvas {
@@ -114,6 +122,8 @@
     <!-- note: starts disabled until camera & config ready -->
     <button id="proceedBtn" disabled>Checking Camera...</button>
   </div>
+
+  <div id="impulseMessage"></div>
 
   <div id="messageArea"></div>
 
