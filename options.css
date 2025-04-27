@@ -114,6 +114,9 @@ p {
 
 
 #status { 
+    display: block;
     margin-top: 15px; 
-    color: green; 
+    margin-bottom: 0;
+    margin-right: auto;
+    color: rgb(181, 236, 181); 
 }
